@@ -1,0 +1,4 @@
+# Numerous always-ignore extensions
+*.err
+*.log
+.vscode/
