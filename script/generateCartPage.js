@@ -4,6 +4,42 @@ import {
 
 import userData from './userData.js';
 
+const sendData = async (url, data) => {
+  const response = await fetch(url, {
+    method: 'POST',
+    body: data,
+  });
+  if (!response.ok) {
+    throw new Error(`Error by address ${url}, status of error is ${response}`);
+  }
+  return await response.json();
+};
+
+const sendCart = () => {
+  const cartForm = document.querySelector('.cart-form');
+
+  cartForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const formData = new FormData(cartForm);
+
+    formData.set('order', userData.cartList);
+    const data = {};
+    for (const [key, value] of formData) {
+      data[key] = value;
+    }
+    data.order = userData.cartList;
+    console.log(data)
+
+    sendData('https://jsonplaceholder.typicode.com/posts', JSON.stringify(data))
+      .then(() => {
+        cartForm.reset()
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  });
+}
+
 const generateCartPage = () => {
 
   if (location.pathname.includes('cart')) {
@@ -91,6 +127,8 @@ const generateCartPage = () => {
 
     })
     getData.cart(userData.cartList, renderCartList);
+
+    sendCart();
   };
 }
 
