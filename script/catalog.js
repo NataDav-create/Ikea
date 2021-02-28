@@ -1,10 +1,15 @@
+import {
+  getData
+} from './getData.js';
+import generateSubCatalog from './generateSubCatalog.js'
+
 export const catalog = () => {
+  const updateSubCatalog = generateSubCatalog();
   const btnBurger = document.querySelector('.btn-burger');
   const catalog = document.querySelector('.catalog');
-  const btnClose = document.querySelector('.btn-close');
   const subCatalog = document.querySelector('.subcatalog');
-  const subCatalogHeader = document.querySelector('.subcatalog-header');
-  const btnReturn = document.querySelector('.btn-return');
+  // const subCatalogHeader = document.querySelector('.subcatalog-header');
+  // const btnReturn = document.querySelector('.btn-return');
 
   const overlay = document.createElement('div');
   overlay.classList.add('overlay');
@@ -21,13 +26,20 @@ export const catalog = () => {
     overlay.classList.remove('active');
   };
 
-  const openSubMenu = event => {
+  const handlerCatalog = event => {
     event.preventDefault();
-    const target = event.target;
-    const itemList = target.closest('.catalog-list__item');
+    // const target = event.target;
+    const itemList = event.target.closest('.catalog-list__item>a');
     if (itemList) {
-      subCatalogHeader.innerHTML = itemList.innerHTML;
-      subCatalog.classList.add('subopen');
+      getData.subCatalog(itemList.textContent, (data) => {
+
+        updateSubCatalog(itemList.textContent, data);
+        // updateSubCatalog(itemList.textContent, console.log(data));
+        subCatalog.classList.add('subopen');
+      })
+    };
+    if (event.target.closest('.btn-close')) {
+      closeMenu();
     }
   };
 
@@ -36,13 +48,16 @@ export const catalog = () => {
   }
 
   btnBurger.addEventListener('click', openMenu);
-  btnClose.addEventListener('click', closeMenu);
   overlay.addEventListener('click', closeMenu);
   document.addEventListener('keydown', (event) => {
     if (event.code === 'Escape') {
       closeMenu();
     }
   });
-  catalog.addEventListener('click', openSubMenu);
-  btnReturn.addEventListener('click', closeSubMenu);
+  catalog.addEventListener('click', handlerCatalog);
+  subCatalog.addEventListener('click', (e) => {
+    const btnReturn = e.target.closest('.btn-return');
+
+    if (btnReturn) closeSubMenu();
+  })
 }
